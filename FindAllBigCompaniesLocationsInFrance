@@ -1,0 +1,108 @@
+import requests
+import openpyxl
+
+GOOGLE_API_KEY = 'blablabla' // here u need to insert ur api key
+
+def find_business_sites(company_name, location):
+    url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={company_name}+in+{location}&key={GOOGLE_API_KEY}"
+    response = requests.get(url)
+    if response.status_code != 200:
+        print(f"Erreur lors de la requête Google Places : {response.status_code}")
+        return []
+
+    results = response.json().get('results', [])
+    business_sites = []
+    for place in results:
+        site = {
+            'name': place.get('name'),
+            'address': place.get('formatted_address'),
+            'place_id': place.get('place_id')
+        }
+        business_sites.append(site)
+    
+    return business_sites
+
+def get_place_details(place_id):
+    url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={GOOGLE_API_KEY}"
+    response = requests.get(url)
+    if response.status_code != 200:
+        print(f"Erreur lors de la requête Google Places : {response.status_code}")
+        return {}
+
+    details = response.json().get('result', {})
+    
+    site_details = {
+        'phone_number': details.get('formatted_phone_number'),
+        'website': details.get('website'),
+        'address': details.get('formatted_address')
+    }
+    
+    return site_details
+
+def create_excel_file():
+    # Create a new Excel workbook and sheet
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Business Sites"
+
+    # Write headers to the first row
+    headers = ["Company", "Site Name", "Address", "Phone Number", "Website"]
+    sheet.append(headers)
+
+    return workbook, sheet
+
+def save_excel_file(workbook, file_path):
+    # Save the Excel workbook to the specified file path
+    workbook.save(file_path)
+    print(f"Fichier Excel enregistré à {file_path}")
+
+def main():
+    companies = [
+        "NESTLE","DANONE"
+    ] // u can put any company u want
+    location = "France" // u can change location 
+    
+    # Create Excel workbook and sheet
+    workbook, sheet = create_excel_file()
+
+    total_sites = 0
+    total_sites_with_phone = 0
+    
+    for company in companies:
+        print(f"Recherche pour {company}...")
+        sites = find_business_sites(company, location)
+        total_sites += len(sites)
+        
+        sites_with_phone = 0
+        for site in sites:
+            print(f"Name: {site['name']}")
+            print(f"Address: {site['address']}")
+            print(f"Place ID: {site['place_id']}")
+            
+            details = get_place_details(site['place_id'])
+            phone_number = details.get('phone_number', "Non disponible")
+            website = details.get('website', "Non disponible")
+            
+            if phone_number != "Non disponible":
+                sites_with_phone += 1
+                print(f"Phone Number: {phone_number}")
+            else:
+                print("Phone Number: Non disponible")
+            
+            print(f"Website: {website}")
+            print()
+            
+            # Write data to Excel file
+            row = [company, site['name'], site['address'], phone_number, website]
+            sheet.append(row)
+        
+        total_sites_with_phone += sites_with_phone
+    
+    print(f"Au total, {total_sites} sites ont été trouvés pour toutes les entreprises.")
+    print(f"Parmi eux, {total_sites_with_phone} sites ont un numéro à contacter.")
+    
+    # Save Excel file
+    save_excel_file(workbook, "C:/Users/Sarra/Desktop/Locations.xlsx") //Change it and put yours
+
+if __name__ == "__main__":
+    main()
