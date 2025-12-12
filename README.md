@@ -1,181 +1,96 @@
-# DataTools
-Data tools that can be used by companies to find, clean and analyse data
-/ Google Places → Excel Export
+# README – Python Scripts for Business Data Extraction
 
-// Description
-This project automatically searches business locations (e.g., NESTLE, DANONE) in a given location (e.g., France) using the Google Places API.
-For each location, it retrieves:
+## Features
+This project contains Python scripts for automatically retrieving business locations, contact details, and website information using the Google Places API, and exporting the data to Excel (.xlsx).
 
-Name
+Key features include:
 
-Address
+- Search business locations by company name and location
+- Retrieve phone numbers, websites, and addresses
+- Export results to Excel with headers
+- Designed for easy extension with additional scripts in the future
 
-Place ID
+---
 
-Phone number
+## Installation
 
-Website
+Clone the repository and create a virtual environment:
 
-Then it exports all data to an Excel (.xlsx) file.
-
-Useful for:
-
-B2B prospecting
-
-Enriching a business database
-
-Analyzing company presence by region
-
-Automating local contact searches
-
-// Technologies Used
-
-Python 3
-
-Google Places API (Text Search + Place Details)
-
-requests (HTTP requests)
-
-openpyxl (Excel read/write)
-
-// Installation
-
-/// 1. Clone or download the project
-
+```bash
 git clone https://your-repo.git
 cd your-project
+python -m venv venv 
+```
 
-
-/// 2. Create a virtual environment (recommended)
-
-python -m venv venv
-# Windows
+### Windows
 venv\Scripts\activate
-# macOS/Linux
+### macOS/Linux
 source venv/bin/activate
-
-
-/// 3. Install dependencies
-
+```bash
 pip install requests openpyxl
+```
+
+## Environment Variables
+The scripts require a Google API Key.
+
+Create a Google Cloud Project and enable Places API.
+
+Create an API key under APIs & Services → Credentials.
+
+Add it to your script:
+
+```bash 
+GOOGLE_API_KEY = 'YOUR_API_KEY_HERE' 
+```
 
 
-// Configuration — Google API Key
+⚠️ For security, you can also use .env and python-dotenv to load the key.
 
-The script uses the Google Places API, which requires an API key.
+## Usage/Examples
 
-Steps:
-
-Go to Google Cloud Console: https://console.cloud.google.com/
-
-Create a project (if you haven’t already).
-
-Enable Places API.
-
-Go to APIs & Services → Credentials.
-
-Create an API key.
-
-Copy it.
-
-Insert it into the script:
-
-GOOGLE_API_KEY = 'YOUR_API_KEY_HERE'
-
-
-⚠️ Never share your API key publicly.
-
-// Usage
-
-Open the Python file.
-
-Modify the companies list:
-
+Edit the companies list and location variable in the script:
+```bash
 companies = ["NESTLE", "DANONE"]
-
-
-Modify the location:
-
 location = "France"
+```
 
-
-Set the Excel save path:
-
+Optionally set the Excel save path:
+```bash
 save_excel_file(workbook, "C:/Users/Sarra/Desktop/Locations.xlsx")
-
+```
 
 Run the script:
-
+```bash
 python script.py
+```
 
-
-// Output
-
-An Excel file will be generated with the columns:
-
-Company	Site Name	Address	Phone Number	Website
-
-Each row corresponds to a site found via Google Places.
-
-// How It Works
-
-/// 1. Search business sites (Text Search API)
-
-find_business_sites(company_name, location)
-
-
-Sends a request to Google Places
-
-Retrieves all matching places
-
-Extracts name, place_id, and address
-
-/// 2. Get place details (Place Details API)
-
-get_place_details(place_id)
-
-
-Retrieves phone number, website, full address
-
-/// 3. Create Excel file
-
-create_excel_file()
-
-
-Creates a new Excel workbook
-
-Adds a sheet named "Business Sites"
-
-Adds header row
-
-/// 4. Add rows & save
-
-sheet.append(row)
-save_excel_file(workbook, "path_to_file.xlsx")
-
-
-// Limitations / Important Notes
-
-Google may charge beyond a certain quota → monitor Cloud Console.
-
-Some locations may have no phone number or website.
-
-The script only retrieves the first page of results (no pagination).
-
-Internet connection is required.
-
-// Possible Improvements
+## Optimizations
+Future improvements may include:
 
 Full pagination support (next_page_token)
 
-Automatic sleep between requests to respect Google rate limits
+Automatic retries and backoff for API rate limits
 
-Error handling with try/except
+Input from CSV/Excel for hundreds of companies
 
-Export to CSV or database
+Better error handling (try/except)
 
-Read input companies from Excel for hundreds of entries
+Logging instead of print statements
 
-// Author
-Script by Sarra, documented professionally.
-Can be adapted for production-ready use if needed.
+Export to database or other formats
+
+## FAQ
+
+- Q: Some sites may have no phone number or website.
+A: This depends on publicly available Google Places data.
+
+- Q: Can I search thousands of companies?
+A: Yes, but watch Google API quotas and implement throttling.
+
+- Q: Can I use this in production?
+A: Yes, but secure your API key and consider optimizations above.
+
+## Authors
+Sarra 
+
+https://www.linkedin.com/in/sarra-mahyou-informatique/
